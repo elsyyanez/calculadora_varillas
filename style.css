@@ -1,0 +1,428 @@
+/* =========================================================
+   Calculadora de Varillas — Estilos
+   Diseño sencillo y amigable en tonos rosa.
+   Para cambiar colores, edita solo las variables de :root.
+   ========================================================= */
+
+:root {
+  --rose-50:  #fff7fa;
+  --rose-100: #fdeef4;
+  --rose-200: #f8d9e6;
+  --rose-300: #f1bcd2;
+  --rose-500: #d06d98;
+  --rose-600: #b8527f;   /* color principal */
+  --rose-700: #93406a;
+
+  --plum:      #9a6fb5;
+  --plum-soft: #f1e9f8;
+  --mint:      #2f8a68;
+  --mint-soft: #e4f5ed;
+  --peach-soft:#fff1e6;
+
+  --page:   #fdf6f9;
+  --card:   #ffffff;
+  --text:   #3d2a34;
+  --muted:  #8b717e;
+  --line:   #f0dce5;
+  --shadow: 0 2px 4px rgba(147, 64, 106, .04), 0 8px 24px rgba(147, 64, 106, .08);
+  --radius: 20px;
+  --radius-sm: 12px;
+
+  --titlebar-h: 40px;   /* alto de la barra superior cuando no hay Window Controls Overlay */
+
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--text);
+  background: var(--page);
+  line-height: 1.5;
+  /* Deja espacio para la barra de título fija */
+  padding-top: env(titlebar-area-height, var(--titlebar-h));
+}
+
+h1, h2 { margin: 0; line-height: 1.2; }
+h2 {
+  font-size: 1.15rem;
+  color: var(--rose-700);
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+/* ===================== ENCABEZADO ===================== */
+.app-header {
+  background: linear-gradient(110deg, var(--rose-600), #c0689a 55%, var(--plum));
+  color: #fff;
+  padding: 1.1rem 1.25rem 2.6rem;
+  padding-top: max(1.1rem, env(safe-area-inset-top));
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+}
+.logo {
+  width: 48px; height: 48px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 6px;
+  flex-shrink: 0;
+}
+.titles { flex: 1; min-width: 0; }
+.titles h1 { font-size: clamp(1.25rem, 3vw, 1.6rem); }
+.titles p { margin: .1rem 0 0; opacity: .92; }
+
+/* ===================== BARRA DE TÍTULO (Window Controls Overlay) =====================
+   env(titlebar-area-*) da la posición y el tamaño del espacio libre junto a los botones
+   de la ventana. Si la superposición no está activa, se usan los valores de reserva
+   y la barra queda como una barra normal en la parte superior.                      */
+.titlebar {
+  position: fixed;
+  left: env(titlebar-area-x, 0);
+  top: env(titlebar-area-y, 0);
+  width: env(titlebar-area-width, 100%);
+  height: env(titlebar-area-height, var(--titlebar-h));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 0 .5rem 0 .75rem;
+  background: var(--rose-600);   /* igual que theme_color: se une con los botones de la ventana */
+  color: #fff;
+  user-select: none;
+  /* La barra sirve para arrastrar la ventana… */
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.tb-brand {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tb-brand img { background: #fff; border-radius: 5px; padding: 2px; }
+.tb-controls {
+  display: flex;
+  align-items: center;
+  gap: .15rem;
+  margin-left: auto;
+  min-width: 0;
+}
+.tb-btn {
+  /* …pero los botones deben recibir clics, así que se excluyen del arrastre. */
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  height: 30px;
+  padding: 0 .6rem;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #fff;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.tb-btn svg {
+  width: 17px; height: 17px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.tb-btn:hover:not(:disabled) { background: rgba(255, 255, 255, .18); }
+.tb-btn:active:not(:disabled) { background: rgba(255, 255, 255, .28); }
+.tb-btn:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.tb-btn:disabled { opacity: .45; cursor: default; }
+
+/* Barra angosta (ventana chica o poco espacio junto a los botones de la ventana): solo iconos */
+.titlebar.compacta .tb-btn span,
+.titlebar.compacta .tb-brand span { display: none; }
+.titlebar.compacta .tb-btn { padding: 0 .45rem; }
+
+/* Con la superposición activa, el encabezado rosa continúa la barra sin línea divisoria */
+.wco .app-header { padding-top: .6rem; }
+
+/* ===================== LAYOUT ===================== */
+.container {
+  max-width: 1100px;
+  margin: -1.6rem auto 0;
+  padding: 0 1.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 1.25rem;
+}
+.bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--rose-600);
+  color: #fff;
+  font-size: .9rem;
+}
+
+/* ===================== FORMULARIO ===================== */
+.field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: 1rem; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+label { font-weight: 600; font-size: .95rem; }
+
+input, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--rose-50);
+  border: 1.5px solid var(--rose-200);
+  border-radius: var(--radius-sm);
+  padding: .7rem .85rem;
+  width: 100%;
+  min-width: 0;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--rose-500);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(208, 109, 152, .18);
+}
+input.invalid { border-color: #d9536f; background: #fff0f3; }
+
+/* Campo con unidad a la derecha (cm, %) */
+.input-unit { position: relative; }
+.input-unit input { padding-right: 2.8rem; }
+.input-unit span {
+  position: absolute;
+  right: .9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.hint { color: var(--muted); font-size: .85rem; margin: 0; }
+
+.form-error {
+  background: #ffecf0;
+  color: #a3294f;
+  border-radius: var(--radius-sm);
+  padding: .6rem .8rem;
+  font-size: .9rem;
+  margin: 0 0 1rem;
+}
+
+/* ===================== BOTONES ===================== */
+.actions { display: flex; gap: .7rem; }
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: .8rem 1.3rem;
+  cursor: pointer;
+  transition: background .15s, transform .06s;
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--rose-300); outline-offset: 2px; }
+.btn-primary { flex: 2; background: var(--rose-600); color: #fff; box-shadow: 0 4px 14px rgba(184, 82, 127, .3); }
+.btn-primary:hover { background: var(--rose-700); }
+.btn-secondary { flex: 1; background: var(--plum-soft); color: #6d4b86; }
+.btn-secondary:hover { background: #e8dcf4; }
+.btn-install { background: #fff; color: var(--rose-600); padding: .55rem 1rem; flex-shrink: 0; }
+.btn-link { background: none; color: var(--rose-600); padding: .2rem .4rem; font-size: .9rem; }
+.btn-link:hover { text-decoration: underline; }
+
+/* ===================== RESULTADO ===================== */
+.empty { text-align: center; color: var(--muted); padding: 2rem 1rem; }
+.empty-icon { font-size: 2.8rem; margin-bottom: .5rem; }
+.empty p { margin: 0; }
+.empty-small { color: var(--muted); margin: 0; }
+
+.answer {
+  background: linear-gradient(135deg, var(--rose-100), var(--plum-soft));
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.1rem;
+  text-align: center;
+}
+.answer-label { display: block; color: var(--muted); font-weight: 600; }
+.answer-value {
+  display: block;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: var(--rose-700);
+  line-height: 1.2;
+}
+
+.result-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: center;
+}
+.sketch svg { width: 100%; height: auto; display: block; }
+
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.facts li {
+  background: var(--rose-50);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: .65rem .85rem;
+  display: flex;
+  flex-direction: column;
+}
+.facts span { color: var(--muted); font-size: .88rem; }
+.facts strong { font-size: 1.1rem; }
+.facts li:last-child { background: var(--mint-soft); border-color: #c4e8d6; }
+.facts li:last-child strong { color: var(--mint); }
+
+.note {
+  margin: 1rem 0 0;
+  background: var(--peach-soft);
+  color: #7a4a26;
+  padding: .6rem .85rem;
+  border-radius: var(--radius-sm);
+  font-size: .9rem;
+}
+
+/* ===================== OTRAS OPCIONES ===================== */
+.options {
+  list-style: none;
+  margin: .6rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: .6rem;
+}
+.options button {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  background: var(--rose-50);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: .65rem .8rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+}
+.options button:hover { border-color: var(--rose-300); background: var(--rose-100); }
+.options .o-size { display: block; font-weight: 700; color: var(--rose-700); }
+.options .o-count { display: block; font-size: .92rem; }
+.options .active { background: var(--mint-soft); border-color: var(--mint); }
+.options .active .o-size { color: var(--mint); }
+
+/* ===================== HISTORIAL ===================== */
+.history { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .5rem; max-height: 360px; overflow-y: auto; }
+.history li {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--rose-50);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: .55rem .7rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.history li:hover, .history li:focus-visible { background: var(--rose-100); border-color: var(--rose-300); outline: none; }
+.h-thumb { width: 46px; height: 46px; flex-shrink: 0; background: #fff; border-radius: 8px; }
+.h-text { min-width: 0; }
+.h-main { font-weight: 600; }
+.h-date { font-size: .8rem; color: var(--muted); }
+
+/* ===================== ¿CÓMO SE CALCULA? ===================== */
+.how summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--rose-700);
+  font-size: 1.05rem;
+}
+.how ol { margin: 1rem 0 .8rem; padding-left: 1.3rem; display: grid; gap: .5rem; }
+.how em { color: var(--muted); font-style: normal; display: block; font-size: .9rem; }
+
+/* ===================== AVISO FLOTANTE ===================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  background: var(--rose-700);
+  color: #fff;
+  padding: .7rem 1.1rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+  font-size: .9rem;
+  max-width: calc(100% - 2rem);
+  z-index: 10;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 860px) {
+  .main-grid, .bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .container { padding: 0 1rem 1.5rem; }
+  .card { padding: 1.15rem; }
+  .result-body { grid-template-columns: 1fr; }
+  .sketch { max-width: 300px; margin: 0 auto; width: 100%; }
+  .titles p { font-size: .9rem; }
+}
+@media (max-width: 560px) {
+  .tb-btn span, .tb-brand span { display: none; }
+  .tb-btn { padding: 0 .45rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* ===================== IMPRESIÓN ===================== */
+@media print {
+  body { padding-top: 0; background: #fff; }
+  .titlebar, .toast, .btn-install, #formColumna .actions, #btnBorrarHistorial { display: none !important; }
+  .app-header { background: none; color: var(--rose-700); padding: 0 0 1rem; }
+  .container { margin-top: 0; }
+  .card { box-shadow: none; break-inside: avoid; }
+  .how { display: none; }
+}

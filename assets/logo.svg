@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Sección de columna con estribo y 4 varillas -->
+  <rect x="6" y="6" width="52" height="52" rx="8" fill="#fde6ef" stroke="#ee85ab" stroke-width="3"/>
+  <rect x="14" y="14" width="36" height="36" rx="5" fill="none" stroke="#b9a6ec" stroke-width="2.5" stroke-dasharray="5 3"/>
+  <circle cx="19" cy="19" r="5" fill="#c84d7c"/>
+  <circle cx="45" cy="19" r="5" fill="#c84d7c"/>
+  <circle cx="19" cy="45" r="5" fill="#c84d7c"/>
+  <circle cx="45" cy="45" r="5" fill="#c84d7c"/>
+  <circle cx="32" cy="19" r="3.4" fill="#7a62c4"/>
+  <circle cx="32" cy="45" r="3.4" fill="#7a62c4"/>
+</svg>

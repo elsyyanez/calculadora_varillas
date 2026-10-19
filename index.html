@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calcula cuántas varillas necesita una columna de concreto.">
+  <meta name="theme-color" content="#b8527f">
+  <title>Calculadora de Varillas</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Varillas">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===================== BARRA DE TÍTULO (Window Controls Overlay) =====================
+       Si la app está instalada, esta barra ocupa el lugar de la barra de título de la ventana
+       (junto a los botones minimizar / maximizar / cerrar). En el navegador se ve como barra superior. -->
+  <div id="titlebar" class="titlebar">
+    <div class="tb-brand">
+      <img src="assets/logo.svg" alt="" width="20" height="20">
+      <span>Varillas</span>
+    </div>
+    <nav class="tb-controls" aria-label="Acciones rápidas">
+      <button type="button" id="tbNuevo" class="tb-btn" title="Nuevo cálculo (Alt+N)" aria-label="Nuevo cálculo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nuevo</span>
+      </button>
+      <button type="button" id="tbCopiar" class="tb-btn" title="Copiar resultado" aria-label="Copiar resultado">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg><span>Copiar</span>
+      </button>
+      <button type="button" id="tbCompartir" class="tb-btn" title="Compartir resultado" aria-label="Compartir resultado">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg><span>Compartir</span>
+      </button>
+      <button type="button" id="tbImprimir" class="tb-btn" title="Imprimir resultado (Ctrl+P)" aria-label="Imprimir resultado">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg><span>Imprimir</span>
+      </button>
+      <button type="button" id="tbAyuda" class="tb-btn" title="¿Cómo se calcula?" aria-label="¿Cómo se calcula?">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg><span>Ayuda</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <img src="assets/logo.svg" alt="" class="logo" width="48" height="48">
+      <div class="titles">
+        <h1>Calculadora de Varillas</h1>
+        <p>Descubre cuántas varillas necesita tu columna</p>
+      </div>
+      <button id="btnInstall" class="btn btn-install" hidden>⬇ Instalar</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="main-grid">
+
+      <!-- ===================== 1. DATOS ===================== -->
+      <section class="card" aria-labelledby="tDatos">
+        <h2 id="tDatos"><span class="step">1</span> Tu columna</h2>
+
+        <form id="formColumna" novalidate>
+          <div class="row-2">
+            <div class="field">
+              <label for="ancho">Ancho</label>
+              <div class="input-unit">
+                <input type="number" id="ancho" min="1" step="0.1" placeholder="30" inputmode="decimal" required>
+                <span>cm</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="largo">Largo</label>
+              <div class="input-unit">
+                <input type="number" id="largo" min="1" step="0.1" placeholder="30" inputmode="decimal" required>
+                <span>cm</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="porcentaje">Porcentaje de acero</label>
+            <div class="input-unit">
+              <input type="number" id="porcentaje" min="0.1" max="10" step="0.1" value="1" inputmode="decimal" required>
+              <span>%</span>
+            </div>
+            <small class="hint">Si no sabes cuál usar, deja 1 %.</small>
+          </div>
+
+          <div class="field">
+            <label for="diametro">Tamaño de varilla</label>
+            <select id="diametro">
+              <option value="auto">✨ Que la app elija por mí</option>
+              <!-- Los tamaños se agregan desde app.js -->
+            </select>
+          </div>
+
+          <p id="formError" class="form-error" role="alert" hidden></p>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Calcular</button>
+            <button type="button" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===================== 2. RESULTADO ===================== -->
+      <section class="card result-card" aria-labelledby="tResultado" aria-live="polite">
+        <h2 id="tResultado"><span class="step">2</span> Resultado</h2>
+
+        <div id="resultadoVacio" class="empty">
+          <div class="empty-icon" aria-hidden="true">🏗️</div>
+          <p>Escribe las medidas de tu columna y presiona <strong>Calcular</strong>.</p>
+        </div>
+
+        <div id="resultado" hidden>
+          <div class="answer">
+            <span class="answer-label">Necesitas</span>
+            <span class="answer-value" id="respuesta">—</span>
+          </div>
+
+          <div class="result-body">
+            <div id="croquis" class="sketch"></div>
+
+            <ul class="facts">
+              <li><span>📐 Tamaño de la columna</span><strong id="fColumna">—</strong></li>
+              <li><span>🔩 Acero necesario</span><strong id="fNecesario">—</strong></li>
+              <li><span>✅ Acero con estas varillas</span><strong id="fPuesto">—</strong></li>
+            </ul>
+          </div>
+
+          <p id="nota" class="note" hidden></p>
+        </div>
+      </section>
+    </div>
+
+    <div class="bottom-grid">
+
+      <!-- ===================== OTRAS OPCIONES ===================== -->
+      <section class="card" aria-labelledby="tOpciones">
+        <h2 id="tOpciones">🔁 Otras opciones</h2>
+        <p id="opcionesVacio" class="empty-small">Aquí verás cuántas varillas necesitas con cada tamaño.</p>
+        <p id="opcionesAyuda" class="hint" hidden>Toca una opción para verla en el dibujo.</p>
+        <ul id="listaOpciones" class="options"></ul>
+      </section>
+
+      <!-- ===================== HISTORIAL ===================== -->
+      <section class="card" aria-labelledby="tHistorial">
+        <div class="card-head">
+          <h2 id="tHistorial">🕘 Cálculos recientes</h2>
+          <button type="button" id="btnBorrarHistorial" class="btn btn-link">Borrar</button>
+        </div>
+        <p id="historialVacio" class="empty-small">Todavía no has hecho cálculos.</p>
+        <ul id="listaHistorial" class="history"></ul>
+      </section>
+    </div>
+
+    <!-- ===================== ¿CÓMO SE CALCULA? ===================== -->
+    <details id="ayuda" class="card how">
+      <summary>💡 ¿Cómo se calcula?</summary>
+      <ol>
+        <li><strong>Área de la columna:</strong> se multiplica el ancho por el largo. <em>Ej. 30 × 30 = 900 cm²</em></li>
+        <li><strong>Acero necesario:</strong> se saca el porcentaje de esa área. <em>Ej. 1 % de 900 = 9 cm²</em></li>
+        <li><strong>Número de varillas:</strong> se divide el acero necesario entre lo que aporta una varilla y se redondea hacia arriba. <em>Ej. 9 ÷ 1.27 = 7.1 → 8 varillas de 1/2"</em></li>
+      </ol>
+      <p class="hint">Siempre se usan al menos 4 varillas, una en cada esquina.</p>
+    </details>
+
+  </main>
+
+  <!-- Avisos breves (instalación, actualización) -->
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
