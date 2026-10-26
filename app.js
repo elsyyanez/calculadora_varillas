@@ -291,7 +291,7 @@ function dibujarColumna(ancho, largo, varilla, cantidad, { mini = false } = {}) 
 
   return `
     <svg viewBox="0 0 ${VB_W} ${VB_H}" role="img"
-         aria-label="Dibujo de columna de ${fmtCorto(ancho)} por ${fmtCorto(largo)} cm con ${cantidad} varillas de ${varilla.nombre}">
+         aria-label="Dibujo de columna de ${fmtCorto(ancho)} por ${fmtCorto(largo)} cm con ${cantidad} varillas de ${varilla.nombre.replace(/"/g, '&quot;')}">
       <defs>
         <!-- Textura del concreto -->
         <pattern id="concreto" width="14" height="14" patternUnits="userSpaceOnUse">
@@ -417,6 +417,40 @@ function ejecutarCalculo(guardarEnHistorial = true) {
   mostrarResultado(r);
   guardar(LS_ULTIMOS, { ancho, largo, porcentaje, tamano });
   if (guardarEnHistorial) agregarAlHistorial(r);
+  actualizarWidget(r);
+}
+
+/* ---------------------------------------------------------
+   Widget de Windows 11 (Win+W)
+   ---------------------------------------------------------
+   Guarda el último resultado como JSON en la caché del widget
+   y avisa al service worker para que lo muestre (ver sw.js).
+   --------------------------------------------------------- */
+
+const CACHE_WIDGET = 'varillas-widget-datos';
+const URL_DATOS_WIDGET = 'widgets/varillas-datos.json';
+
+async function actualizarWidget(r) {
+  if (!('caches' in window) || !('serviceWorker' in navigator)) return;
+  const op = r.elegida;
+  const datos = {
+    respuesta: textoVarillas(op),
+    columna: `${fmtCorto(r.ancho)} × ${fmtCorto(r.largo)} cm`,
+    porcentaje: `${fmtCorto(r.porcentaje)} %`,
+    aceroNecesario: `${fmt(r.aceroNecesario)} cm²`,
+    aceroPuesto: `${fmt(op.aceroPuesto)} cm²`,
+  };
+  try {
+    const cache = await caches.open(CACHE_WIDGET);
+    await cache.put(
+      new URL(URL_DATOS_WIDGET, location.href).href,
+      new Response(JSON.stringify(datos), { headers: { 'Content-Type': 'application/json' } })
+    );
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({ tipo: 'widget-actualizar' });
+  } catch {
+    /* Sin caché: la app funciona igual, solo sin widget actualizado. */
+  }
 }
 
 function limpiar() {
@@ -506,7 +540,7 @@ function configurarInstalacion() {
    Controles:
      1. Nuevo      → limpia el formulario
      2. Copiar     → copia el resultado al portapapeles
-     3. Compartir  → comparte el resultado (o lo copia si no se puede)
+     3. Compartir  → menú: compartir, copiar o exportar a Excel, Word, CSV, JSON y texto (exportar.js)
      4. Imprimir   → imprime el resultado con el dibujo
      5. Ayuda      → abre "¿Cómo se calcula?"
    --------------------------------------------------------- */
@@ -593,7 +627,7 @@ function ajustarBarra(rect) {
 function configurarBarraTitulo() {
   $('#tbNuevo').addEventListener('click', limpiar);
   $('#tbCopiar').addEventListener('click', copiarResultado);
-  $('#tbCompartir').addEventListener('click', compartirResultado);
+  // #tbCompartir abre el menú de compartir y exportar (ver exportar.js)
   $('#tbImprimir').addEventListener('click', () => { if (hayResultado()) window.print(); });
   $('#tbAyuda').addEventListener('click', abrirAyuda);
 
@@ -677,6 +711,15 @@ function init() {
   configurarBarraTitulo();
   configurarInstalacion();
   registrarServiceWorker();
+
+  // Botón "Nuevo" del widget: abre con ?nuevo=1 → formulario limpio y primer campo enfocado
+  const params = new URLSearchParams(location.search);
+  if (params.has('nuevo')) {
+    limpiar();
+    params.delete('nuevo');
+    const resto = params.toString();
+    history.replaceState(null, '', location.pathname + (resto ? `?${resto}` : '') + location.hash);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

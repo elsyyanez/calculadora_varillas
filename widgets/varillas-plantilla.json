@@ -1,0 +1,42 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Último cálculo",
+      "size": "Small",
+      "weight": "Bolder",
+      "isSubtle": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${respuesta}",
+      "size": "Large",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "Columna", "value": "${columna}" },
+        { "title": "Acero", "value": "${porcentaje}" },
+        { "title": "Necesario", "value": "${aceroNecesario}" },
+        { "title": "Con varillas", "value": "${aceroPuesto}" }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "Abrir Calculadora de Varillas",
+      "verb": "abrir"
+    },
+    {
+      "type": "Action.Execute",
+      "title": "Nuevo",
+      "verb": "nuevo"
+    }
+  ]
+}

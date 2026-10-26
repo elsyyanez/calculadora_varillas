@@ -420,9 +420,51 @@ input.invalid { border-color: #d9536f; background: #fff0f3; }
 /* ===================== IMPRESIÓN ===================== */
 @media print {
   body { padding-top: 0; background: #fff; }
-  .titlebar, .toast, .btn-install, #formColumna .actions, #btnBorrarHistorial { display: none !important; }
+  .titlebar, .menu-compartir, .toast, .btn-install, #formColumna .actions, #btnBorrarHistorial { display: none !important; }
   .app-header { background: none; color: var(--rose-700); padding: 0 0 1rem; }
   .container { margin-top: 0; }
   .card { box-shadow: none; break-inside: avoid; }
   .how { display: none; }
 }
+
+/* ===================== MENÚ COMPARTIR / EXPORTAR ===================== */
+.menu-compartir {
+  position: fixed;
+  top: calc(env(titlebar-area-y, 0px) + env(titlebar-area-height, var(--titlebar-h)) + 4px);
+  right: .75rem;
+  z-index: 30;
+  min-width: 13.5rem;
+  padding: .35rem;
+  display: grid;
+  gap: 2px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+.menu-compartir[hidden] { display: none; }
+.menu-compartir button {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: 100%;
+  padding: .55rem .7rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: .92rem;
+  text-align: left;
+  cursor: pointer;
+}
+.menu-compartir button:hover,
+.menu-compartir button:focus-visible { background: var(--rose-100); outline: none; }
+.menu-compartir svg {
+  width: 18px; height: 18px; flex: none;
+  fill: none; stroke: var(--rose-600); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.menu-compartir hr { width: 100%; margin: .2rem 0; border: 0; border-top: 1px solid var(--line); }

@@ -32,5 +32,40 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/app-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Calculadora de varillas con un resultado"
+    },
+    {
+      "src": "screenshots/app-narrow.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Calculadora de varillas en pantalla angosta"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Último cálculo de varillas",
+      "description": "Muestra el último cálculo de varillas y permite abrir la calculadora o empezar uno nuevo.",
+      "tag": "ultimo-calculo",
+      "template": "ultimo-calculo",
+      "ms_ac_template": "widgets/varillas-plantilla.json",
+      "data": "widgets/varillas-datos.json",
+      "type": "application/json",
+      "update": 3600,
+      "screenshots": [
+        {
+          "src": "screenshots/widget.png",
+          "sizes": "600x400",
+          "label": "Widget con el último cálculo de varillas"
+        }
+      ]
+    }
   ]
 }

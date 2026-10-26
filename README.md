@@ -25,9 +25,21 @@ Arriba de la app hay una barra con 5 controles:
 |---|---|
 | ➕ **Nuevo** | Limpia el formulario para un cálculo nuevo (atajo: Alt+N) |
 | 📋 **Copiar** | Copia el resultado como texto |
-| 🔗 **Compartir** | Comparte el resultado (WhatsApp, correo…); si no se puede, lo copia |
+| 🔗 **Compartir** | Abre un menú para compartir el resultado (WhatsApp, correo…), copiarlo o descargarlo en Excel, Word, CSV, JSON o texto (atajo: Alt+E) |
 | 🖨️ **Imprimir** | Imprime el resultado con el dibujo de la columna |
 | ❓ **Ayuda** | Abre "¿Cómo se calcula?" |
+
+### Exportar
+
+Con **Compartir** puedes descargar el cálculo en:
+
+| Formato | Qué trae |
+|---|---|
+| **Excel (.xlsx)** | 3 hojas: Resultado, Otras opciones e Historial |
+| **Word (.docx)** | Informe con el dibujo de la columna y las tablas de resultado y otras opciones |
+| **CSV, JSON, texto** | Los mismos datos en formatos simples |
+
+Los archivos se arman en el propio navegador (`exportar.js`), sin internet ni librerías externas.
 
 Si presionas Copiar, Compartir o Imprimir antes de calcular, la app te avisa que primero hay que calcular.
 
@@ -60,8 +72,11 @@ sin demasiadas varillas y, si se puede, con un número par para que queden parej
 index.html      La página
 style.css       Los colores y el diseño (los colores están al inicio, en :root)
 app.js          Los cálculos, el dibujo y el historial
+exportar.js     Menú de compartir y exportación a Excel, Word, CSV, JSON y texto
 manifest.json   Datos para instalar la app
-sw.js           Hace que funcione sin internet
+sw.js           Hace que funcione sin internet y actualiza el widget
+widgets/        Plantilla (tarjeta adaptable) y datos del widget
+screenshots/    Capturas de la app y del widget
 icons/          Iconos de la app
 assets/         Logo
 ```
@@ -81,6 +96,39 @@ Tiene que ser desde `localhost`: si abres `index.html` con doble clic, no funcio
 
 Presiona el botón **⬇ Instalar** del encabezado, o el icono de instalar en la barra de direcciones.
 La app se abrirá en su propia ventana y aparecerá en el menú Inicio.
+
+## Widget de Windows 11 (Win+W)
+
+Muestra el último cálculo y tiene los botones "Abrir Calculadora de Varillas" y "Nuevo" (`index.html?nuevo=1`).
+Archivos: `widgets/varillas-plantilla.json`, `widgets/varillas-datos.json`, `screenshots/` y el bloque `widgets` de `manifest.json`.
+La página guarda el último resultado en la caché `varillas-widget-datos` y avisa a `sw.js`.
+
+Requisito: la app debe estar en una URL **https pública** (ni `localhost` sirve) e instalarse con **Microsoft Edge**.
+
+```powershell
+# 1. Runtime de Windows App SDK
+winget install Microsoft.WindowsAppRuntime.1.2
+winget install Microsoft.WindowsAppRuntime.1.8   # solo si hace falta una versión más nueva
+
+# 2. Panel de widgets al día
+Get-AppxPackage MicrosoftWindows.Client.WebExperience | Select Name, Version
+winget upgrade --id 9MSSGKG348SP --source msstore
+
+# 3. Versión de Edge
+(Get-Item "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe").VersionInfo.ProductVersion
+
+# 4. Reiniciar el panel de widgets
+Get-Process Widgets* -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+Pasos manuales:
+1. Configuración → "developer" → activar *Usar funciones para desarrolladores*.
+2. Abrir la URL https en Edge e instalar la app.
+3. Win+W → Agregar widgets → elegir "Último cálculo de varillas".
+4. Abrir la app y calcular una vez para que el widget muestre datos.
+
+Después de cada cambio en `manifest.json` o `sw.js`: desinstalar en `edge://apps`, abrir la URL, Ctrl+Shift+R e instalar de nuevo.
+DevTools → Application → Manifest no muestra los widgets.
 
 ## Si cambias el código
 
