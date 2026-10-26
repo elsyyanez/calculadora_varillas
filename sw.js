@@ -10,7 +10,7 @@
      el control; la página se recarga sola (ver app.js).
    ========================================================= */
 
-const CACHE_VERSION = 'v3.3.1';
+const CACHE_VERSION = 'v3.3.2';
 const CACHE_NAME = `calc-varillas-${CACHE_VERSION}`;
 
 /* Widget (panel Win+W): la página guarda aquí el último resultado.
@@ -75,7 +75,8 @@ async function leerDatosWidget() {
 async function actualizarWidgets(widgetEvento) {
   if (!self.widgets) return;
   try {
-    const instalados = await self.widgets.matchAll();
+    // Edge exige un argumento en matchAll(); si aun así falla, se usa solo el widget del evento.
+    const instalados = await self.widgets.matchAll({}).catch(() => []);
     // En widgetinstall/widgetresume la instancia nueva puede no estar aún en matchAll(): se usa la del evento.
     const tags = [...new Set([
       ...instalados.map((w) => w.definition.tag),
