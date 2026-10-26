@@ -10,7 +10,7 @@
      el control; la página se recarga sola (ver app.js).
    ========================================================= */
 
-const CACHE_VERSION = 'v3.3.0';
+const CACHE_VERSION = 'v3.3.1';
 const CACHE_NAME = `calc-varillas-${CACHE_VERSION}`;
 
 /* Widget (panel Win+W): la página guarda aquí el último resultado.
@@ -72,11 +72,15 @@ async function leerDatosWidget() {
 }
 
 /** Actualiza todos los widgets instalados (si el navegador soporta widgets). */
-async function actualizarWidgets() {
+async function actualizarWidgets(widgetEvento) {
   if (!self.widgets) return;
   try {
     const instalados = await self.widgets.matchAll();
-    const tags = [...new Set(instalados.map((w) => w.definition.tag))];
+    // En widgetinstall/widgetresume la instancia nueva puede no estar aún en matchAll(): se usa la del evento.
+    const tags = [...new Set([
+      ...instalados.map((w) => w.definition.tag),
+      ...(widgetEvento ? [widgetEvento.definition.tag] : []),
+    ])];
     if (!tags.length) return;
     const [template, data] = await Promise.all([
       fetch(URL_PLANTILLA).then((r) => r.text()),
@@ -90,7 +94,7 @@ async function actualizarWidgets() {
 
 self.addEventListener('widgetinstall', (event) => {
   event.waitUntil((async () => {
-    await actualizarWidgets();
+    await actualizarWidgets(event.widget);
     try {
       await self.registration.periodicSync.register(TAG_WIDGET, { minInterval: MIN_INTERVALO_WIDGET });
     } catch (err) {
@@ -100,7 +104,7 @@ self.addEventListener('widgetinstall', (event) => {
 });
 
 self.addEventListener('widgetresume', (event) => {
-  event.waitUntil(actualizarWidgets());
+  event.waitUntil(actualizarWidgets(event.widget));
 });
 
 self.addEventListener('widgetuninstall', (event) => {
